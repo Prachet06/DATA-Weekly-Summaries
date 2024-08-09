@@ -1,0 +1,106 @@
+---
+title: "Lab Report for Lab One"
+date: "YYYY-MM-DD"
+author: "Your name here"
+format: 
+  html: 
+    ### IMPORTANT ###
+    embed-resources: true # Creates a single HTML file as output
+    code-fold: show # Code folding; allows you to show/hide code chunks
+    ### USEFUL ###
+    code-tools: true # Includes a menu to download the code file
+    ### OPTIONAL ###
+    code-line-numbers: true # Line numbers in code chunks
+    df-print: paged # Sets how dataframes are automatically printed
+    theme: lux # Controls the font, colours, etc.
+table-of-contents: true # (Useful) Creates a table of contents!
+number-sections: true # (Optional) Puts numbers next to heading/subheadings
+---
+
+In this report I will detail what I did in the first DATA2902 lab, the packages and functions used.
+
+## Ice Breaker
+
+To get to know everyone better our tutors gave each of us a **Bingo Card** and each student in the lab had to go around and interact with new people to fill up their bingo cards which allowed me to meet tons of new and some of who will be my teammates for assignments in the future.
+
+## First Plot
+
+I first made a scatter plot between the bill length and body mass of penguins.
+
+```{r, warning = FALSE}
+library("ggplot2")
+library("tidyr")
+library("palmerpenguins")
+
+penguins |>
+  drop_na(sex)|>
+  ggplot(aes(x = body_mass_g, y = bill_length_mm,colour=sex))+
+  geom_point()
+```
+
+I used the ggplot2 package for creating the scatter plot and the tidyr package for using the function **drop_na()**. The function drop_na helps in removing rows from the data frame which contain missing value across all columns on default but we can specify and only remove the missing row from one specific column.
+
+I also load the palmerpenguins library which has all the data that I have used for the plots in my first lab.
+
+## Second Plot
+
+In the second plot I have compared bill length and bill depth of penguins,I use the facet wrap function to create multiple panels of sexes.
+
+```{r, warning = FALSE}
+library("ggplot2")
+library("dplyr")
+
+penguins |> 
+  ggplot() + 
+  # add the aesthetics
+  aes(x = bill_length_mm, 
+      y = bill_depth_mm,
+      colour = sex) +
+  # add a geometry
+  geom_point() + 
+  # tidy up the labels
+  labs(x = "Bill Length (mm)",
+       y = "Bill Depth (mm)",
+       colour = "Sex") +
+  facet_wrap(~ sex) +
+  geom_smooth(method = "lm")
+
+penguins = penguins |>
+    mutate(species = stringr::word(species, start = 1, end = 1))
+```
+
+I used ggplot2 again for for creating the scatter plot and the dplyr package to use the **mutate** function. I used mutate to modify columns in the data frame, and shortened all the names to one word.
+
+## Third Plot
+
+In the third plot I have used ggplot2 to create a histogram with x-axis as the flipper length and I have filled the bars with the species.
+
+```{r, warning = FALSE}
+library("readr")
+library("ggplot2")
+library("plotly")
+
+data("penguins")
+
+p <- penguins |> 
+  ggplot() + 
+  # add the aesthetics
+  aes(x = flipper_length_mm, 
+      colour = species) +
+  # add a geometry
+  geom_histogram()+
+  # tidy up the labels
+  labs(x = "Bill Length (mm)",
+       colour = "Species")
+
+plotly::ggplotly(p)
+ggsave("lab_one.png", plot = p)
+
+write_csv(penguins,"penguins_data.csv")
+```
+
+I have used the plotly package again to make the plot interactable and I've used readr package to save my plot.
+
+## Shiny App
+
+Creating an app that draws a histogram based on the input of the user on the interactive sidebar. Giving the user the choice to choose what column is being used on the x-axis and the y-axis.
